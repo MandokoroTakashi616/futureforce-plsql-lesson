@@ -8,7 +8,26 @@ Docker で Oracle Database Free を起動し、EC（商品・注文・在庫）�
 - Docker Desktop（Mac / Windows）
 - Docker に割り当てるメモリ 2GB 以上
 - Git（Windows は [Git for Windows](https://gitforwindows.org/) に含まれる **Git Bash** を使う）
-- [Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/)
+- [Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/)（下記「SQL Developer をインストールする」）
+
+## SQL Developer をインストールする
+
+1. [SQL Developer のダウンロードページ](https://www.oracle.com/database/sqldeveloper/technologies/download/) を開く
+2. OS に合うファイルをダウンロードする。どちらも Java（JDK 17）が同梱されているので、Java を別に入れる必要はありません
+
+   | OS | ダウンロードするファイル |
+   |----|--------------------------|
+   | Windows | ファイル名が `-x64.zip` で終わるもの（`-no-jre.zip` は Java 同梱なしなので選ばない） |
+   | Mac（Apple Silicon） | ファイル名が `-macos-aarch64.app.zip` で終わるもの |
+
+3. ダウンロードした zip を展開する
+4. 起動する
+   - Windows: 展開したフォルダの中の `sqldeveloper.exe` を実行する
+   - Mac: 展開してできたアプリを「アプリケーション」フォルダに移して開く
+
+> 2026-09-14 時点のダウンロードページ（バージョン 26.2）をもとに書いています。ファイル名や表記は変わることがあります。
+> Intel 版 Mac 向けのファイルは掲載されていません。
+> Windows で起動しない場合、ダウンロードページには `MSVCR100.dll` が必要という注意書きがあります。
 
 ## セットアップ
 
