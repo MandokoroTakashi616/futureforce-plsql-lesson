@@ -1,0 +1,25 @@
+services:
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: futureforce-plsql
+    ports:
+      - "127.0.0.1:1521:1521"
+    environment:
+      ORACLE_PASSWORD: futureforce
+      APP_USER: learner
+      APP_USER_PASSWORD: learner
+      # 日本語を文字化けさせずに投入・表示するため。エラーメッセージは英語のまま（検索しやすい）
+      NLS_LANG: AMERICAN_AMERICA.AL32UTF8
+    volumes:
+      - plsql-data:/opt/oracle/oradata
+      - ./init:/container-entrypoint-initdb.d:ro
+      - ./sql:/opt/plsql/sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+volumes:
+  plsql-data:
