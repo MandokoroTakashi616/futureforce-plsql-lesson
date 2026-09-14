@@ -5,15 +5,17 @@ Docker で Oracle Database Free を起動し、EC（商品・注文・在庫）�
 
 ## 前提
 
-- Docker Desktop（Mac / Windows）または Docker Engine（Linux / WSL2）
+- Docker Desktop（Mac / Windows）
 - Docker に割り当てるメモリ 2GB 以上
-- Git
+- Git（Windows は [Git for Windows](https://gitforwindows.org/) に含まれる **Git Bash** を使う）
 - [Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/)
 
 ## セットアップ
 
+ターミナル（Mac: ターミナル／Windows: Git Bash）で実行します。
+
 ```bash
-git clone https://github.com/capital-investment-of-next-stage/futureforce-plsql-lesson.git
+git clone https://github.com/MandokoroTakashi616/futureforce-plsql-lesson.git
 cd futureforce-plsql-lesson
 docker compose up -d
 docker compose ps
@@ -76,6 +78,20 @@ docker compose exec oracle sqlplus learner/learner@//localhost/FREEPDB1 @/opt/pl
 | `healthy` にならない | `docker compose logs -f oracle` で起動ログを確認。`DATABASE IS READY TO USE!` が出れば起動完了 |
 | SQL Developer で接続できない | 「SID」ではなく「サービス名」に `FREEPDB1` を入れているか確認 |
 | SQL Developer がない環境 | `docker compose exec oracle sqlplus learner/learner@//localhost/FREEPDB1` でコンテナ内の sqlplus を使う。接続後に `SET SERVEROUTPUT ON` を実行する |
+
+## Windows（Git Bash）での注意
+
+- `*.sh` / `*.sql` は `.gitattributes` で改行コードを LF に固定しているため、Git の `core.autocrlf` の設定に関係なくそのまま動きます
+- コンテナ内の sqlplus を使うコマンドで `the input device is not a TTY` と表示された場合は、先頭に `winpty` を付けます
+- `/opt/...` のようなパスを渡すコマンドは、Git Bash がパスを Windows 形式に書き換えてしまうことがあるため、先頭に `MSYS_NO_PATHCONV=1` を付けます
+
+```bash
+# sqlplus で接続する
+winpty docker compose exec oracle sqlplus learner/learner@//localhost/FREEPDB1
+
+# ターミナルからデータを初期状態に戻す
+MSYS_NO_PATHCONV=1 winpty docker compose exec oracle sqlplus learner/learner@//localhost/FREEPDB1 @/opt/plsql/sql/99_reset.sql
+```
 
 ## 構成
 
