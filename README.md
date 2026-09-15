@@ -58,6 +58,8 @@ END;
 
 ## データを初期状態に戻す
 
+テーブルとデータが初期状態に戻り、レッスンで作ったプロシージャ・ファンクション・パッケージ・トリガーも削除されます。
+
 SQL Developer で `sql/99_reset.sql` を開き、スクリプトの実行（F5）で実行します（[ガイドの7章](docs/sql-developer-guide.md#7-ファイルを開いて実行するデータのリセット)）。
 
 ターミナルから行う場合:
@@ -96,7 +98,7 @@ MSYS_NO_PATHCONV=1 winpty docker compose exec oracle sqlplus learner/learner@//l
 ```
 docker-compose.yml   Oracle Database Free（gvenzl/oracle-free:23-slim）
 init/01_setup.sh     初回起動時に schema と seed を投入
-sql/00_drop.sql      テーブル削除
+sql/00_drop.sql      レッスンで作ったプロシージャ・パッケージ・トリガーとテーブルの削除
 sql/01_schema.sql    テーブル定義
 sql/02_seed.sql      基本データ（教材の期待出力が依存するため変更しない）
 sql/99_reset.sql     初期状態に戻す
