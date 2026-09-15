@@ -8,26 +8,9 @@ Docker で Oracle Database Free を起動し、EC（商品・注文・在庫）�
 - Docker Desktop（Mac / Windows）
 - Docker に割り当てるメモリ 2GB 以上
 - Git（Windows は [Git for Windows](https://gitforwindows.org/) に含まれる **Git Bash** を使う）
-- [Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/)（下記「SQL Developer をインストールする」）
+- [Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/)
 
-## SQL Developer をインストールする
-
-1. [SQL Developer のダウンロードページ](https://www.oracle.com/database/sqldeveloper/technologies/download/) を開く
-2. OS に合うファイルをダウンロードする。どちらも Java（JDK 17）が同梱されているので、Java を別に入れる必要はありません
-
-   | OS | ダウンロードするファイル |
-   |----|--------------------------|
-   | Windows | ファイル名が `-x64.zip` で終わるもの（`-no-jre.zip` は Java 同梱なしなので選ばない） |
-   | Mac（Apple Silicon） | ファイル名が `-macos-aarch64.app.zip` で終わるもの |
-
-3. ダウンロードした zip を展開する
-4. 起動する
-   - Windows: 展開したフォルダの中の `sqldeveloper.exe` を実行する
-   - Mac: 展開してできたアプリを「アプリケーション」フォルダに移して開く
-
-> 2026-09-14 時点のダウンロードページ（バージョン 26.2）をもとに書いています。ファイル名や表記は変わることがあります。
-> Intel 版 Mac 向けのファイルは掲載されていません。
-> Windows で起動しない場合、ダウンロードページには `MSVCR100.dll` が必要という注意書きがあります。
+> **SQL Developer を触ったことがない人は、先に [SQL Developer はじめてガイド](docs/sql-developer-guide.md) を読んでください。** インストール・接続の作り方・実行ボタンの使い分け・困ったときの対処をまとめています。
 
 ## セットアップ
 
@@ -42,28 +25,25 @@ docker compose ps
 
 `STATUS` が `healthy` になるまで待ちます（初回はイメージのダウンロードを含めて数分かかります）。
 
-## SQL Developer で接続する
+## SQL Developer の接続情報
 
-「新規接続」から次の内容で接続を作成します。
+左側の「接続」を右クリック →「新規接続」で、次の内容の接続を作ります（手順の詳細は[ガイドの4章](docs/sql-developer-guide.md#4-接続を作る)）。
 
 | 項目 | 値 |
 |------|-----|
 | 名前 | futureforce-plsql（任意） |
 | ユーザー名 | `learner` |
 | パスワード | `learner` |
+| 接続タイプ | 基本（Basic） |
 | ホスト名 | `localhost` |
 | ポート | `1521` |
-| サービス名 | `FREEPDB1`（「SID」ではなく「サービス名」を選ぶ） |
+| サービス名 | `FREEPDB1`（**「SID」ではなく「サービス名」**を選ぶ） |
 
-接続できたら、ワークシートで次を実行し、結果が `10` なら準備完了です。
-
-```sql
-SELECT COUNT(*) FROM products;
-```
+接続できたら、ワークシートで `SELECT COUNT(*) FROM products;` を実行し、結果が `10` なら準備完了です。
 
 ## PL/SQL を実行するときの注意
 
-`DBMS_OUTPUT.PUT_LINE` の結果を表示するには、ワークシートに次のように書いて **スクリプトの実行（F5）** で実行します。
+ワークシートに `SET SERVEROUTPUT ON` と PL/SQL ブロックを書き、**スクリプトの実行（F5）** で実行します。結果は「スクリプト出力」タブに表示されます。
 
 ```sql
 SET SERVEROUTPUT ON
@@ -74,12 +54,11 @@ END;
 /
 ```
 
-- 結果は「スクリプト出力」タブに表示されます
-- **文の実行（Ctrl+Enter / Cmd+Enter）** では `SET SERVEROUTPUT ON` が効かず、出力が表示されません。その場合は「表示」メニュー →「DBMS出力」を開き、接続を選んで出力を有効にします
+**文の実行（Ctrl+Enter）** では `SET SERVEROUTPUT ON` が効かず、出力が表示されません（[ガイドの6章](docs/sql-developer-guide.md#6-plsql-を実行して出力を見るスクリプトの実行)）。
 
 ## データを初期状態に戻す
 
-SQL Developer で `sql/99_reset.sql` を開き、スクリプトの実行（F5）で実行します。
+SQL Developer で `sql/99_reset.sql` を開き、スクリプトの実行（F5）で実行します（[ガイドの7章](docs/sql-developer-guide.md#7-ファイルを開いて実行するデータのリセット)）。
 
 ターミナルから行う場合:
 
@@ -95,7 +74,7 @@ docker compose exec oracle sqlplus learner/learner@//localhost/FREEPDB1 @/opt/pl
 | 終了したい | `docker compose stop`（再開は `docker compose start`） |
 | ポート1521が使用中 | `docker-compose.yml` の `127.0.0.1:1521:1521` の左側を `1522` などに変え、SQL Developer のポートも合わせる |
 | `healthy` にならない | `docker compose logs -f oracle` で起動ログを確認。`DATABASE IS READY TO USE!` が出れば起動完了 |
-| SQL Developer で接続できない | 「SID」ではなく「サービス名」に `FREEPDB1` を入れているか確認 |
+| SQL Developer で接続できない | エラー番号（`ORA-12505` など）ごとの対処を[ガイドの「困ったとき」](docs/sql-developer-guide.md#困ったとき)にまとめています |
 | SQL Developer がない環境 | `docker compose exec oracle sqlplus learner/learner@//localhost/FREEPDB1` でコンテナ内の sqlplus を使う。接続後に `SET SERVEROUTPUT ON` を実行する |
 
 ## Windows（Git Bash）での注意
@@ -122,4 +101,5 @@ sql/01_schema.sql    テーブル定義
 sql/02_seed.sql      基本データ（教材の期待出力が依存するため変更しない）
 sql/99_reset.sql     初期状態に戻す
 sql/bulk/            大量データ（準備中）
+docs/sql-developer-guide.md  SQL Developer はじめてガイド
 ```
